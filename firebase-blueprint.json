@@ -1,0 +1,119 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Tourist profile with safety and identity information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "did": { "type": "string", "description": "Blockchain-based Decentralized Identity" },
+        "safetyScore": { "type": "number", "description": "Current safety score (0-100)" },
+        "role": { "type": "string", "enum": ["tourist", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "did"]
+    },
+    "Incident": {
+      "title": "Safety Incident",
+      "description": "Reported safety incident by a tourist",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reporterUid": { "type": "string" },
+        "type": { "type": "string", "enum": ["theft", "lost_item", "medical", "unsafe_zone", "harassment", "natural_hazard", "suspicious"] },
+        "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "address": { "type": "string" }
+          }
+        },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["reported", "investigating", "resolved"] },
+        "blockchainHash": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reporterUid", "type", "severity", "location"]
+    },
+    "SafetyZone": {
+      "title": "Geo-fenced Safety Zone",
+      "description": "Defined safe or restricted area",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["safe", "caution", "restricted"] },
+        "geometry": {
+          "type": "object",
+          "properties": {
+            "center": {
+              "type": "object",
+              "properties": {
+                "lat": { "type": "number" },
+                "lng": { "type": "number" }
+              }
+            },
+            "radius": { "type": "number", "description": "Radius in meters" }
+          }
+        },
+        "description": { "type": "string" },
+        "riskLevel": { "type": "number" }
+      },
+      "required": ["name", "type", "geometry"]
+    },
+    "Hotel": {
+      "title": "Hotel Recommendation",
+      "description": "Hotel information with safety rating",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "priceRange": { "type": "string" },
+        "safetyRating": { "type": "number" },
+        "amenities": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      }
+    },
+    "Attraction": {
+      "title": "Tourist Attraction",
+      "description": "Popular or hidden gem tourist spot",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["adventure", "spiritual", "historical", "entertainment", "shopping"] },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "safetyScore": { "type": "number" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "User", "description": "User profiles" },
+    "/incidents/{id}": { "schema": "Incident", "description": "Safety incidents" },
+    "/safety_zones/{id}": { "schema": "SafetyZone", "description": "Geo-fenced zones" },
+    "/hotels/{id}": { "schema": "Hotel", "description": "Hotel recommendations" },
+    "/attractions/{id}": { "schema": "Attraction", "description": "Tourist attractions" }
+  }
+}

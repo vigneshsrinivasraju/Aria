@@ -1,0 +1,5 @@
+{
+  "name": "SafeTrail 2026",
+  "description": "Agentic Tourist Safety, Navigation & Smart Travel Assistant Platform with AI-powered safety monitoring, incident response, and blockchain-based digital identity.",
+  "requestFramePermissions": ["geolocation", "microphone"]
+}

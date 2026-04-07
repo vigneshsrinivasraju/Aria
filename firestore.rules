@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields:
+    //   - uid: string (required, immutable)
+    //   - email: string (required, email format)
+    //   - displayName: string (required)
+    //   - photoURL: string (optional)
+    //   - did: string (required, immutable)
+    //   - safetyScore: number (required, 0-100)
+    //   - role: string (required, enum: tourist, admin)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Collection: incidents
+    // Fields:
+    //   - reporterUid: string (required, immutable)
+    //   - type: string (required, enum: theft, lost_item, medical, etc.)
+    //   - severity: string (required, enum: low, medium, high, critical)
+    //   - location: map (required, lat/lng)
+    //   - description: string (required, max 1000 chars)
+    //   - status: string (required, enum: reported, investigating, resolved)
+    //   - blockchainHash: string (required)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Collection: safety_zones
+    // Fields:
+    //   - name: string (required)
+    //   - type: string (required, enum: safe, caution, restricted)
+    //   - geometry: map (required, center/radius)
+    //   - riskLevel: number (required, 0-10)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          request.auth.token.email == "gundrajuvignesh032@gmail.com");
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'did', 'safetyScore', 'role', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() < 100 &&
+             data.did is string && data.did.size() > 0 &&
+             data.safetyScore is number && data.safetyScore >= 0 && data.safetyScore <= 100 &&
+             data.role in ['tourist', 'admin'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidIncident(data) {
+      return data.keys().hasAll(['reporterUid', 'type', 'severity', 'location', 'description', 'status', 'blockchainHash', 'createdAt']) &&
+             data.reporterUid == request.auth.uid &&
+             data.type in ['theft', 'lost_item', 'medical', 'unsafe_zone', 'harassment', 'natural_hazard', 'suspicious'] &&
+             data.severity in ['low', 'medium', 'high', 'critical'] &&
+             data.location is map && data.location.lat is number && data.location.lng is number &&
+             data.description is string && data.description.size() < 1000 &&
+             data.status in ['reported', 'investigating', 'resolved'] &&
+             data.blockchainHash is string &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidAttraction(data) {
+      return data.keys().hasAll(['name', 'category', 'location', 'safetyScore', 'description']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.category in ['historical', 'nature', 'shopping', 'entertainment'] &&
+             data.location is map && data.location.lat is number && data.location.lng is number &&
+             data.safetyScore is number && data.safetyScore >= 0 && data.safetyScore <= 100 &&
+             data.description is string && data.description.size() < 1000;
+    }
+
+    function isValidHotel(data) {
+      return data.keys().hasAll(['name', 'location', 'priceRange', 'safetyRating', 'amenities', 'description']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.location is map && data.location.lat is number && data.location.lng is number &&
+             data.priceRange in ['$', '$$', '$$$', '$$$$'] &&
+             data.safetyRating is number && data.safetyRating >= 1 && data.safetyRating <= 5 &&
+             data.amenities is list && data.amenities.size() < 20 &&
+             data.description is string && data.description.size() < 1000;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated(); // Allow reading profiles for safety checks (e.g. active tourists)
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'tourist' || isAdmin());
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /incidents/{incidentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidIncident(request.resource.data);
+      allow update: if isAdmin() || (isOwner(resource.data.reporterUid) && request.resource.data.status == resource.data.status);
+      allow delete: if isAdmin();
+    }
+
+    match /safety_zones/{zoneId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /hotels/{hotelId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidHotel(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /attractions/{attractionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidAttraction(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
