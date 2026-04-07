@@ -251,8 +251,8 @@ export default function SafetyMap() {
       
       const prompt = `Act as a Smart Travel Map AI. Analyze the area around coordinates ${userLocation[0]}, ${userLocation[1]}.
       
-      1. Discover 3-5 Hotels based on: safety score of area, distance, emergency access, and verified status.
-      2. Discover 3-5 Tourist Attractions based on: safety rating, popularity, and current weather suitability.
+      1. Discover 3-5 Hotels based on: safety score of area, distance, emergency access, and verified status. Include a high-quality Unsplash image URL for each.
+      2. Discover 3-5 Tourist Attractions based on: safety rating, popularity, and current weather suitability. Include a high-quality Unsplash image URL for each.
       3. Identify 3 Emergency Services (Hospital, Police, Embassy) nearby.
       4. Provide a brief Safety Insight about the current route/area.
       5. Provide current Weather Info.
@@ -266,6 +266,7 @@ export default function SafetyMap() {
           "rating": number (1-5),
           "amenities": string[],
           "description": string,
+          "imageUrl": string (Unsplash URL),
           "location": { "lat": number, "lng": number },
           "distance": string,
           "navigationTip": string,
@@ -278,6 +279,7 @@ export default function SafetyMap() {
           "category": "adventure" | "spiritual" | "historical" | "entertainment" | "shopping" | "nature" | "culture" | "landmark",
           "safetyScore": number (0-100),
           "description": string,
+          "imageUrl": string (Unsplash URL),
           "location": { "lat": number, "lng": number },
           "bestTimeToVisit": string,
           "whyVisit": string,
@@ -544,38 +546,38 @@ export default function SafetyMap() {
       <div className="absolute top-4 left-4 right-4 flex flex-col gap-4 pointer-events-none z-10">
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-2">
-            <div className="p-3 bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl pointer-events-auto flex items-center gap-3 shadow-xl">
-              <div className={`p-2 rounded-lg ${currentSafetyScore > 80 ? 'bg-green-500/20 text-green-500' : currentSafetyScore > 50 ? 'bg-yellow-500/20 text-yellow-500' : 'bg-red-500/20 text-red-500'}`}>
+            <div className="p-3 bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl pointer-events-auto flex items-center gap-3 shadow-2xl">
+              <div className={`p-2.5 rounded-xl ${currentSafetyScore > 80 ? 'bg-emerald-500/20 text-emerald-500' : currentSafetyScore > 50 ? 'bg-amber-500/20 text-amber-500' : 'bg-rose-500/20 text-rose-500'}`}>
                 <Shield className="w-5 h-5" />
               </div>
               <div>
-                <span className="block text-[10px] text-slate-500 uppercase tracking-widest font-bold leading-none">Current Safety</span>
-                <span className={`text-lg font-bold ${currentSafetyScore > 80 ? 'text-green-400' : currentSafetyScore > 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                <span className="block text-[10px] text-slate-500 uppercase tracking-widest font-bold leading-none mb-1">Current Safety</span>
+                <span className={`text-lg font-bold tracking-tight ${currentSafetyScore > 80 ? 'text-emerald-400' : currentSafetyScore > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
                   {currentSafetyScore > 80 ? 'High' : currentSafetyScore > 50 ? 'Moderate' : 'Low'} ({currentSafetyScore}%)
                 </span>
               </div>
             </div>
 
             {weather && (
-              <div className="p-3 bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl pointer-events-auto flex items-center gap-3 shadow-xl">
-                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500">
+              <div className="p-3 bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl pointer-events-auto flex items-center gap-3 shadow-2xl">
+                <div className="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-400">
                   <Thermometer className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="block text-[10px] text-slate-500 uppercase tracking-widest font-bold leading-none">{weather.condition}</span>
-                  <span className="text-lg font-bold text-blue-400">{weather.temp}°C</span>
+                  <span className="block text-[10px] text-slate-500 uppercase tracking-widest font-bold leading-none mb-1">{weather.condition}</span>
+                  <span className="text-lg font-bold text-indigo-400 tracking-tight">{weather.temp}°C</span>
                 </div>
               </div>
             )}
           </div>
 
           <div className="flex flex-col gap-2 pointer-events-auto">
-            <button className="p-3 bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl text-slate-400 hover:text-white shadow-xl">
+            <button className="p-3.5 bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl text-slate-400 hover:text-slate-100 shadow-2xl transition-all active:scale-90">
               <Layers className="w-5 h-5" />
             </button>
             <button 
               onClick={locateUser}
-              className="p-3 bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-xl text-blue-500 hover:text-blue-400 shadow-xl"
+              className="p-3.5 bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl text-indigo-400 hover:text-indigo-300 shadow-2xl transition-all active:scale-90"
             >
               <Crosshair className="w-5 h-5" />
             </button>
@@ -586,15 +588,15 @@ export default function SafetyMap() {
           <motion.div 
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="p-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl pointer-events-auto shadow-2xl max-w-sm"
+            className="p-5 bg-slate-950/90 backdrop-blur-xl border border-slate-800/60 rounded-[2rem] pointer-events-auto shadow-2xl max-w-sm"
           >
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500 mt-1">
-                <Info className="w-4 h-4" />
+            <div className="flex items-start gap-4">
+              <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400 mt-1 border border-indigo-500/20">
+                <Info className="w-4.5 h-4.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1">Safety Insight</h4>
-                <p className="text-sm text-slate-400 leading-relaxed">{safetyInsight}</p>
+                <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5">Safety Insight</h4>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">{safetyInsight}</p>
               </div>
             </div>
           </motion.div>
@@ -602,20 +604,20 @@ export default function SafetyMap() {
       </div>
 
       {/* Scan & Itinerary Buttons */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+      <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3">
         <button
           onClick={handleScan}
           disabled={isScanning || !userLocation}
-          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xl shadow-blue-900/40 flex items-center gap-2 transition-all active:scale-95"
+          className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:bg-slate-800 text-white rounded-full font-bold text-sm shadow-2xl shadow-indigo-900/40 flex items-center gap-3 transition-all active:scale-95 border border-indigo-400/20"
         >
           {isScanning ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
               Scanning Surroundings...
             </>
           ) : (
             <>
-              <Search className="w-4 h-4" />
+              <Search className="w-5 h-5" />
               Discover Nearby
             </>
           )}
@@ -625,9 +627,9 @@ export default function SafetyMap() {
           <button
             onClick={generateItinerary}
             disabled={isGeneratingItinerary}
-            className="px-6 py-2 bg-slate-900/80 backdrop-blur-md border border-slate-800 text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl flex items-center gap-2 transition-all active:scale-95"
+            className="px-6 py-2.5 bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 text-indigo-400 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-2.5 transition-all active:scale-95 hover:bg-slate-900 hover:border-indigo-500/30"
           >
-            {isGeneratingItinerary ? <Loader2 className="w-3 h-3 animate-spin" /> : <Calendar className="w-3 h-3" />}
+            {isGeneratingItinerary ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Calendar className="w-3.5 h-3.5" />}
             Curate Itinerary
           </button>
         )}
@@ -699,32 +701,40 @@ export default function SafetyMap() {
             exit={{ y: "100%" }}
             className="absolute bottom-24 left-0 right-0 p-4 z-20 pointer-events-none"
           >
-            <div className="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl pointer-events-auto relative">
+            <div className="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl pointer-events-auto relative">
+              {selectedItem.imageUrl && (
+                <div className="h-40 w-full relative">
+                  <img src={selectedItem.imageUrl} alt={selectedItem.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
+                </div>
+              )}
+              
               <button 
                 onClick={() => setSelectedItem(null)}
-                className="absolute top-4 right-4 p-1 hover:bg-slate-800 rounded-full text-slate-500"
+                className="absolute top-4 right-4 p-2 bg-slate-900/50 backdrop-blur-md hover:bg-slate-800 rounded-full text-slate-300 z-10"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-2xl ${
-                  selectedItem.itemType === 'incident' ? 'bg-red-500/20 text-red-500' :
-                  selectedItem.itemType === 'attraction' ? 'bg-blue-500/20 text-blue-500' :
-                  selectedItem.itemType === 'hotel' ? 'bg-indigo-500/20 text-indigo-500' :
-                  selectedItem.itemType === 'emergency' ? 'bg-orange-500/20 text-orange-500' :
-                  'bg-green-500/20 text-green-500'
-                }`}>
-                  {selectedItem.itemType === 'incident' ? <AlertTriangle className="w-6 h-6" /> :
-                   selectedItem.itemType === 'attraction' ? <Landmark className="w-6 h-6" /> :
-                   selectedItem.itemType === 'hotel' ? <HotelIcon className="w-6 h-6" /> :
-                   selectedItem.itemType === 'emergency' ? (
-                     selectedItem.type === 'hospital' ? <Heart className="w-6 h-6" /> :
-                     selectedItem.type === 'police' ? <Shield className="w-6 h-6" /> :
-                     <Building2 className="w-6 h-6" />
-                   ) :
-                   <Shield className="w-6 h-6" />}
-                </div>
+              <div className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className={`p-3 rounded-2xl shrink-0 ${
+                    selectedItem.itemType === 'incident' ? 'bg-red-500/20 text-red-500' :
+                    selectedItem.itemType === 'attraction' ? 'bg-blue-500/20 text-blue-500' :
+                    selectedItem.itemType === 'hotel' ? 'bg-indigo-500/20 text-indigo-500' :
+                    selectedItem.itemType === 'emergency' ? 'bg-orange-500/20 text-orange-500' :
+                    'bg-green-500/20 text-green-500'
+                  }`}>
+                    {selectedItem.itemType === 'incident' ? <AlertTriangle className="w-6 h-6" /> :
+                     selectedItem.itemType === 'attraction' ? <Landmark className="w-6 h-6" /> :
+                     selectedItem.itemType === 'hotel' ? <HotelIcon className="w-6 h-6" /> :
+                     selectedItem.itemType === 'emergency' ? (
+                       selectedItem.type === 'hospital' ? <Heart className="w-6 h-6" /> :
+                       selectedItem.type === 'police' ? <Shield className="w-6 h-6" /> :
+                       <Building2 className="w-6 h-6" />
+                     ) :
+                     <Shield className="w-6 h-6" />}
+                  </div>
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center flex-wrap gap-2">
                     <h3 className="font-bold text-lg leading-tight">{selectedItem.name || selectedItem.type?.replace('_', ' ')}</h3>
@@ -807,7 +817,8 @@ export default function SafetyMap() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -200,15 +200,15 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
   return (
     <div className="flex flex-col h-full bg-slate-950">
       {/* Chat Header */}
-      <div className="p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md flex items-center justify-between">
+      <div className="p-5 border-b border-slate-800/60 bg-slate-950/50 backdrop-blur-xl flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/20 rounded-xl text-blue-500">
+          <div className="p-2.5 bg-indigo-500/10 rounded-2xl text-indigo-500 border border-indigo-500/20 shadow-lg shadow-indigo-500/5">
             <Bot className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="font-bold tracking-tight">ARIA 2026</h2>
+            <h2 className="font-bold text-lg tracking-tight text-slate-100">ARIA 2026</h2>
             <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Agentic Safety Intelligence</span>
             </div>
           </div>
@@ -216,20 +216,20 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
         <div className="flex gap-2">
           <button 
             onClick={() => setTranslatorMode(!translatorMode)}
-            className={`p-2 rounded-lg transition-colors ${translatorMode ? 'bg-blue-500/20 text-blue-500' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+            className={`p-2.5 rounded-xl transition-all duration-300 border ${translatorMode ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-lg shadow-indigo-500/10' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'}`}
             title="Translator Mode"
           >
-            <Languages className="w-4 h-4" />
+            <Languages className="w-4.5 h-4.5" />
           </button>
-          <button className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors" title="Meeting Points">
-            <Heart className="w-4 h-4" />
+          <button className="p-2.5 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-400 hover:text-slate-200 hover:border-slate-700 transition-all" title="Meeting Points">
+            <Heart className="w-4.5 h-4.5" />
           </button>
           <button 
             onClick={toggleListening}
-            className={`p-2 rounded-lg transition-colors ${isListening ? 'bg-red-500/20 text-red-500' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+            className={`p-2.5 rounded-xl transition-all duration-300 border ${isListening ? 'bg-rose-500/20 text-rose-400 border-rose-500/30 shadow-lg shadow-rose-500/10 animate-pulse' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'}`}
             title="Voice Mode"
           >
-            <Volume2 className="w-4 h-4" />
+            <Volume2 className="w-4.5 h-4.5" />
           </button>
         </div>
       </div>
@@ -241,16 +241,16 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-blue-600/10 border-b border-blue-500/20 px-6 py-4 flex flex-col gap-3"
+            className="bg-indigo-600/5 border-b border-indigo-500/20 px-6 py-5 flex flex-col gap-4 backdrop-blur-sm"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-bold text-blue-400 uppercase tracking-widest">Master Translator Active</span>
+              <div className="flex items-center gap-2.5 text-indigo-400">
+                <Sparkles className="w-5 h-5 fill-current" />
+                <span className="text-sm font-bold uppercase tracking-widest">Master Translator Active</span>
               </div>
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Select Target Language</span>
             </div>
-            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
               {['Hindi', 'Telugu', 'Kannada', 'Tamil', 'Malayalam', 'English'].map(lang => (
                 <button 
                   key={lang}
@@ -258,10 +258,10 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
                     setSelectedLanguage(lang);
                     setInput(`Translate the following to ${lang}: `);
                   }}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
+                  className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap border ${
                     selectedLanguage === lang 
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/40' 
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                      ? 'bg-indigo-600 border-indigo-500 text-white shadow-xl shadow-indigo-900/40 scale-105' 
+                      : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                   }`}
                 >
                   {lang}
@@ -277,30 +277,30 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
         {messages.map((msg) => (
           <motion.div
             key={msg.id}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`flex gap-4 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg ${
-                msg.role === 'user' ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xl border ${
+                msg.role === 'user' ? 'bg-indigo-600 border-indigo-500' : 'bg-slate-900 border-slate-800'
               }`}>
-                {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5 text-blue-500" />}
+                {msg.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-indigo-400" />}
               </div>
-              <div className={`p-8 rounded-[2.5rem] text-xl leading-relaxed shadow-2xl border-2 ${
+              <div className={`p-6 md:p-8 rounded-[2rem] text-lg md:text-xl leading-relaxed shadow-2xl border ${
                 msg.role === 'user' 
-                  ? 'bg-blue-600 text-white border-blue-500 rounded-tr-none' 
-                  : 'bg-slate-900 border-slate-800 text-slate-100 rounded-tl-none'
+                  ? 'bg-indigo-600 text-white border-indigo-500 rounded-tr-none' 
+                  : 'bg-slate-900/60 border-slate-800/60 text-slate-100 rounded-tl-none backdrop-blur-sm'
               }`}>
-                <div className="markdown-body prose prose-invert prose-xl max-w-none mb-6">
+                <div className="markdown-body prose prose-invert prose-indigo max-w-none mb-6">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
                 {msg.role === 'assistant' && (
-                  <div className="flex items-center gap-6 mt-6 pt-6 border-t border-slate-800/50">
+                  <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-6 pt-6 border-t border-slate-800/60">
                     <button 
                       onClick={() => speak(msg.content)}
-                      className={`flex items-center gap-3 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 ${
-                        isSpeaking ? 'text-green-400' : 'text-blue-400 hover:text-blue-300'
+                      className={`flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 ${
+                        isSpeaking ? 'text-emerald-400' : 'text-indigo-400 hover:text-indigo-300'
                       }`}
                     >
                       <Volume2 className={`w-5 h-5 ${isSpeaking ? 'animate-pulse' : ''}`} />
@@ -308,7 +308,7 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
                     </button>
                     <button 
                       onClick={() => copyToClipboard(msg.content)}
-                      className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+                      className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
                     >
                       <Copy className="w-4 h-4" />
                       Copy
@@ -360,21 +360,21 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
       </div>
 
       {/* Input Area */}
-      <div className="p-6 pb-32 bg-slate-950 border-t border-slate-900 shadow-2xl">
-        <form onSubmit={handleSend} className="relative flex gap-3 max-w-4xl mx-auto">
-          <div className="relative flex-1">
+      <div className="p-6 pb-32 bg-slate-950/80 backdrop-blur-xl border-t border-slate-800/60 shadow-2xl relative z-10">
+        <form onSubmit={handleSend} className="relative flex gap-4 max-w-4xl mx-auto">
+          <div className="relative flex-1 group">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask ARIA to translate or speak in Hindi, Telugu, etc..."
-              className="w-full p-5 pr-14 bg-slate-900 border border-slate-800 rounded-3xl text-base text-slate-200 focus:outline-none focus:border-blue-500 transition-all shadow-inner"
+              className="w-full p-5 pr-16 bg-slate-900/50 border border-slate-800/60 rounded-[2rem] text-base text-slate-200 focus:outline-none focus:border-indigo-500/50 focus:bg-slate-900 transition-all shadow-inner placeholder:text-slate-600"
             />
             <button
               type="button"
               onClick={toggleListening}
-              className={`absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-2xl transition-all ${
-                isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-500 hover:text-slate-300'
+              className={`absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-2xl transition-all duration-300 ${
+                isListening ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 animate-pulse' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
               }`}
             >
               <Mic className="w-5 h-5" />
@@ -383,9 +383,9 @@ export default function AriaAssistant({ profile }: AriaAssistantProps) {
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="px-8 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-3xl transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center group"
+            className="px-8 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:bg-slate-800 text-white rounded-[2rem] transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center group active:scale-95"
           >
-            <Send className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </button>
         </form>
       </div>

@@ -3,11 +3,21 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-primary: #6366f1; /* Indigo 500 */
+  --color-brand-secondary: #a855f7; /* Purple 500 */
+  --color-brand-accent: #22d3ee; /* Cyan 400 */
+  --color-bg-main: #0f172a; /* Slate 900 */
+  --color-bg-card: #1e293b; /* Slate 800 */
+  --color-text-main: #f8fafc; /* Slate 50 */
+  --color-text-muted: #94a3b8; /* Slate 400 */
 }
 
 @layer base {
   body {
-    @apply bg-slate-950 text-white antialiased;
+    @apply bg-slate-950 text-slate-50 antialiased;
+    background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 40%),
+                      radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.05), transparent 40%);
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

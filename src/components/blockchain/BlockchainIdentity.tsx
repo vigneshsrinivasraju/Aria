@@ -42,7 +42,7 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
         setGeneratedOtp(otp);
         setShowOtpInput(true);
         setIsSendingOtp(false);
-        alert(`[ARIA SATELLITE SERVICE] Secure verification code sent to ${phoneInput} via StarLink-7: ${otp}`);
+        // Removed alert for cleaner UI
       }, 1000);
     }, 2000);
   };
@@ -50,19 +50,23 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
   const handleVerifyOtp = async () => {
     if (otpInput === generatedOtp) {
       setIsVerifyingOtp(true);
-      try {
-        await updateDoc(doc(db, 'users', profile!.uid), {
-          phoneVerified: true,
-          phoneNumber: phoneInput
-        });
-        setIsVerifyingOtp(false);
-        setShowOtpInput(false);
-      } catch (error) {
-        console.error("Error verifying OTP:", error);
-        setIsVerifyingOtp(false);
-      }
+      // Simulate network delay
+      setTimeout(async () => {
+        try {
+          await updateDoc(doc(db, 'users', profile!.uid), {
+            phoneVerified: true,
+            phoneNumber: phoneInput
+          });
+          setIsVerifyingOtp(false);
+          setShowOtpInput(false);
+        } catch (error) {
+          console.error("Error verifying OTP:", error);
+          setIsVerifyingOtp(false);
+        }
+      }, 1500);
     } else {
-      alert("Invalid OTP. Please try again.");
+      // In a real app we'd show a UI error, for now we'll just clear the input
+      setOtpInput('');
     }
   };
 
@@ -167,30 +171,30 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
     <div className="p-4 space-y-6 pb-24 max-w-4xl mx-auto">
       {/* Header */}
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Blockchain Identity</h1>
-        <p className="text-slate-500 text-sm font-medium">Decentralized & Encrypted Travel Security</p>
+        <h1 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-white via-indigo-400 to-purple-500 bg-clip-text text-transparent">BLOCKCHAIN IDENTITY</h1>
+        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">Decentralized & Encrypted Travel Security</p>
       </header>
 
       {/* DID Card */}
-      <section className={`p-6 bg-gradient-to-br border rounded-3xl relative overflow-hidden group transition-all duration-500 ${
+      <section className={`p-8 bg-gradient-to-br border rounded-[2.5rem] relative overflow-hidden group transition-all duration-700 shadow-2xl ${
         profile?.isVerified 
-          ? 'from-indigo-900/40 to-slate-900 border-indigo-500/20' 
-          : 'from-slate-900 to-slate-950 border-slate-800'
+          ? 'from-indigo-900/40 to-slate-950 border-indigo-500/20 shadow-indigo-900/20' 
+          : 'from-slate-900/40 to-slate-950 border-slate-800/60 shadow-black/40'
       }`}>
-        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Fingerprint className="w-32 h-32" />
+        <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-700 -rotate-12">
+          <Fingerprint className="w-48 h-48" />
         </div>
         
-        <div className="relative z-10 space-y-6">
+        <div className="relative z-10 space-y-8">
           <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-2xl transition-colors ${profile?.isVerified ? 'bg-indigo-500/20 text-indigo-400' : 'bg-slate-800 text-slate-500'}`}>
-                <Shield className="w-6 h-6" />
+            <div className="flex items-center gap-4">
+              <div className={`p-4 rounded-2xl transition-all duration-500 ${profile?.isVerified ? 'bg-indigo-500/20 text-indigo-400 shadow-lg shadow-indigo-500/10' : 'bg-slate-800 text-slate-500'}`}>
+                <Shield className="w-7 h-7" />
               </div>
               <div>
-                <h3 className="font-bold text-lg">Decentralized ID (DID)</h3>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${profile?.isVerified ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
+                <h3 className="font-bold text-xl text-slate-100">Decentralized ID (DID)</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className={`w-2 h-2 rounded-full ${profile?.isVerified ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
                   <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
                     {profile?.isVerified ? 'Active on SafeChain v2.0' : 'Verification Required'}
                   </span>
@@ -201,30 +205,33 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
               <button 
                 onClick={handleVerify}
                 disabled={isVerifying || !profile?.travelDocuments?.every(d => d.status === 'verified')}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-indigo-900/20"
+                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl transition-all flex items-center gap-2 shadow-xl shadow-indigo-900/40 active:scale-95"
               >
-                {isVerifying ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
-                {isVerifying ? 'Generating DID...' : 'Generate DID'}
+                {isVerifying ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                {isVerifying ? 'Generating...' : 'Generate DID'}
               </button>
             )}
             {profile?.isVerified && (
-              <div className="px-4 py-2 bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-widest rounded-xl flex items-center gap-2">
-                <CheckCircle className="w-3 h-3" />
+              <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold uppercase tracking-widest rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-900/10">
+                <CheckCircle className="w-3.5 h-3.5" />
                 Verified
               </div>
             )}
           </div>
 
-          <div className="p-4 bg-black/40 border border-slate-800 rounded-2xl space-y-4">
+          <div className="p-5 bg-slate-950/40 border border-slate-800/60 rounded-3xl space-y-5 backdrop-blur-sm">
             <div className="space-y-2">
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">DID Address</span>
               <div className="flex items-center justify-between">
-                <code className="text-xs text-indigo-300 truncate mr-4">
+                <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">DID Address</span>
+                <span className="text-[9px] text-indigo-500/60 font-mono">ED25519-SafeTrail</span>
+              </div>
+              <div className="flex items-center justify-between bg-slate-950/50 p-3 rounded-xl border border-slate-800/40">
+                <code className="text-xs text-indigo-300 truncate mr-4 font-mono tracking-wider">
                   {profile?.did || 'did:safetrail:pending_verification_...'}
                 </code>
                 {profile?.did && (
-                  <button className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors">
-                    <Copy className="w-3.5 h-3.5 text-slate-500" />
+                  <button className="p-2 hover:bg-slate-800 rounded-lg transition-colors group/copy">
+                    <Copy className="w-4 h-4 text-slate-500 group-hover/copy:text-indigo-400 transition-colors" />
                   </button>
                 )}
               </div>
@@ -274,19 +281,23 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
       </section>
 
       {/* Phone Verification Section */}
-      <section className="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-6">
-        <div className="flex items-center justify-between">
+      <section className="p-6 bg-slate-900/40 border border-slate-800/60 rounded-3xl space-y-6 backdrop-blur-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.03] -rotate-12">
+          <Phone className="w-32 h-32" />
+        </div>
+        
+        <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl transition-colors ${profile?.phoneVerified ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-800 text-slate-500'}`}>
+            <div className={`p-2.5 rounded-xl transition-all duration-500 ${profile?.phoneVerified ? 'bg-indigo-500/20 text-indigo-400 shadow-lg shadow-indigo-500/10' : 'bg-slate-800 text-slate-500'}`}>
               <Phone className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm uppercase tracking-widest">Phone Verification</h3>
-              <p className="text-[10px] text-slate-500">Secure your account with ARIA OTP verification.</p>
+              <h3 className="font-bold text-sm uppercase tracking-widest text-slate-200">Phone Verification</h3>
+              <p className="text-[10px] text-slate-500 font-medium">Secure your account with ARIA Satellite OTP.</p>
             </div>
           </div>
           {profile?.phoneVerified && (
-            <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-1">
+            <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full flex items-center gap-1.5 animate-in fade-in zoom-in">
               <CheckCircle className="w-3 h-3" />
               Verified
             </div>
@@ -294,97 +305,174 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
         </div>
 
         {!profile?.phoneVerified ? (
-          <div className="space-y-4">
+          <div className="space-y-6 relative z-10">
             {!showOtpInput ? (
-              <div className="flex gap-3">
-                <input 
-                  type="tel"
-                  value={phoneInput}
-                  onChange={(e) => setPhoneInput(e.target.value)}
-                  placeholder="+1 234 567 890"
-                  className="flex-1 p-3 bg-black/40 border border-slate-800 rounded-2xl text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-all"
-                />
-                <button 
-                  onClick={handleSendOtp}
-                  disabled={isSendingOtp}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20"
-                >
-                  {isSendingOtp ? (
-                    isSatelliteConnecting ? <Satellite className="w-3 h-3 animate-bounce" /> : <RefreshCw className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-3 h-3" />
-                  )}
-                  {isSatelliteConnecting ? 'Uplink...' : 'ARIA'}
-                </button>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="relative flex-1 group">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                      <Globe className="w-4 h-4 text-slate-600 group-focus-within:text-indigo-500 transition-colors" />
+                    </div>
+                    <input 
+                      type="tel"
+                      value={phoneInput}
+                      onChange={(e) => setPhoneInput(e.target.value)}
+                      placeholder="Enter mobile number"
+                      className="w-full pl-11 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all placeholder:text-slate-700 font-mono tracking-wider"
+                    />
+                  </div>
+                  <button 
+                    onClick={handleSendOtp}
+                    disabled={isSendingOtp || !phoneInput}
+                    className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all flex items-center gap-3 shadow-xl shadow-indigo-900/40 active:scale-95 group/btn relative overflow-hidden"
+                  >
+                    {isSendingOtp && (
+                      <motion.div 
+                        initial={{ x: '-100%' }}
+                        animate={{ x: '100%' }}
+                        transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      />
+                    )}
+                    {isSendingOtp ? (
+                      <div className="flex items-center gap-2 relative z-10">
+                        <Satellite className="w-4 h-4 animate-bounce text-indigo-200" />
+                        <span className="animate-pulse">UPLINKING...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 relative z-10">
+                        <Satellite className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
+                        <span>ARIA</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-1 h-1 rounded-full ${isSendingOtp ? 'bg-indigo-500 animate-pulse' : 'bg-slate-700'}`} />
+                    <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest">Signal Lock</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-1 h-1 rounded-full ${isSendingOtp ? 'bg-indigo-500 animate-pulse' : 'bg-slate-700'}`} />
+                    <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest">Encryption: AES-512</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-1 h-1 rounded-full ${isSendingOtp ? 'bg-indigo-500 animate-pulse' : 'bg-slate-700'}`} />
+                    <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest">Latency: 24ms</span>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-center gap-3">
-                  <Globe className="w-4 h-4 text-blue-400 animate-pulse" />
-                  <p className="text-[10px] text-blue-200/70">
-                    ARIA Satellite Service has transmitted a 6-digit code to <span className="text-blue-400 font-bold">{phoneInput}</span>
-                  </p>
+              <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="p-5 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl flex items-center gap-4 backdrop-blur-md">
+                  <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
+                    <Satellite className="w-5 h-5 text-indigo-400 animate-bounce" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-indigo-400 font-black uppercase tracking-widest">Satellite Link Active</p>
+                    <p className="text-[10px] text-indigo-200/60 leading-relaxed">
+                      Verification code transmitted to <span className="text-indigo-400 font-bold">{phoneInput}</span> via StarLink-7 orbital relay.
+                    </p>
+                  </div>
                 </div>
-                <div className="flex justify-center gap-2">
-                  {[...Array(6)].map((_, i) => (
-                    <input 
-                      key={i}
-                      id={`otp-${i}`}
-                      type="text"
-                      maxLength={1}
-                      value={otpInput[i] || ''}
-                      onChange={(e) => {
-                        const val = e.target.value.slice(-1); // Get last character
-                        if (val.match(/^\d$/)) {
-                          const otpArray = otpInput.split('');
-                          // Ensure array has 6 elements
-                          while (otpArray.length < 6) otpArray.push('');
-                          otpArray[i] = val;
-                          const finalOtp = otpArray.join('').slice(0, 6);
-                          setOtpInput(finalOtp);
-                          if (i < 5) document.getElementById(`otp-${i + 1}`)?.focus();
-                        } else if (e.target.value === '') {
-                          const otpArray = otpInput.split('');
-                          while (otpArray.length < 6) otpArray.push('');
-                          otpArray[i] = '';
-                          setOtpInput(otpArray.join(''));
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Backspace' && !otpInput[i] && i > 0) {
-                          document.getElementById(`otp-${i - 1}`)?.focus();
-                        }
-                      }}
-                      className="w-10 h-12 bg-black/40 border border-slate-800 rounded-xl text-center text-lg font-bold text-slate-200 focus:outline-none focus:border-blue-500 transition-all"
-                    />
-                  ))}
+
+                <div className="flex flex-col items-center gap-4">
+                  <div className="flex justify-center p-1 bg-slate-950/60 border border-slate-800/60 rounded-2xl shadow-2xl relative group">
+                    {/* Visual linking line */}
+                    <div className="absolute top-1/2 left-4 right-4 h-[1px] bg-indigo-500/10 -translate-y-1/2 pointer-events-none" />
+                    
+                    <div className="flex gap-1 relative z-10">
+                      {[...Array(6)].map((_, i) => (
+                        <input 
+                          key={i}
+                          id={`otp-${i}`}
+                          type="text"
+                          maxLength={1}
+                          value={otpInput[i] || ''}
+                          onChange={(e) => {
+                            const val = e.target.value.slice(-1);
+                            if (val.match(/^\d$/)) {
+                              const otpArray = otpInput.split('');
+                              while (otpArray.length < 6) otpArray.push('');
+                              otpArray[i] = val;
+                              const finalOtp = otpArray.join('').slice(0, 6);
+                              setOtpInput(finalOtp);
+                              if (i < 5) document.getElementById(`otp-${i + 1}`)?.focus();
+                            } else if (e.target.value === '') {
+                              const otpArray = otpInput.split('');
+                              while (otpArray.length < 6) otpArray.push('');
+                              otpArray[i] = '';
+                              setOtpInput(otpArray.join(''));
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !otpInput[i] && i > 0) {
+                              document.getElementById(`otp-${i - 1}`)?.focus();
+                            }
+                          }}
+                          className={`w-12 h-16 bg-slate-900/40 border border-slate-800/50 text-center text-2xl font-black text-indigo-400 focus:outline-none focus:border-indigo-500/50 focus:bg-indigo-500/5 transition-all
+                            ${i === 0 ? 'rounded-l-xl' : ''} 
+                            ${i === 5 ? 'rounded-r-xl' : ''}
+                            ${otpInput[i] ? 'border-indigo-500/30 bg-indigo-500/5' : ''}
+                          `}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Enter 6-digit secure code</span>
+                    {generatedOtp && (
+                      <span className="text-[8px] text-indigo-500/40 font-mono">Demo Mode: {generatedOtp}</span>
+                    )}
+                  </div>
                 </div>
-                <button 
-                  onClick={handleVerifyOtp}
-                  disabled={isVerifyingOtp || otpInput.length !== 6}
-                  className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20"
-                >
-                  {isVerifyingOtp ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Shield className="w-3 h-3" />}
-                  Verify OTP
-                </button>
-                <button 
-                  onClick={() => setShowOtpInput(false)}
-                  className="text-[10px] text-slate-500 font-bold uppercase tracking-widest hover:text-slate-400"
-                >
-                  Change Number
-                </button>
+
+                <div className="space-y-4">
+                  <button 
+                    onClick={handleVerifyOtp}
+                    disabled={isVerifyingOtp || otpInput.length !== 6}
+                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all flex items-center justify-center gap-3 shadow-2xl shadow-indigo-900/40 active:scale-95 group"
+                  >
+                    {isVerifyingOtp ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Verifying...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span>Verify Identity</span>
+                      </>
+                    )}
+                  </button>
+                  <div className="flex justify-center">
+                    <button 
+                      onClick={() => {
+                        setShowOtpInput(false);
+                        setOtpInput('');
+                      }}
+                      className="text-[10px] text-slate-500 font-bold uppercase tracking-widest hover:text-indigo-400 transition-colors py-2 flex items-center gap-2"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Resend via Satellite
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         ) : (
-          <div className="p-4 bg-black/40 border border-slate-800 rounded-2xl flex items-center justify-between">
+          <div className="p-4 bg-slate-950/30 border border-slate-800/50 rounded-2xl flex items-center justify-between relative z-10">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-800 rounded-xl text-slate-400">
+              <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400">
                 <Phone className="w-4 h-4" />
               </div>
-              <span className="text-sm font-mono text-slate-300">{profile.phoneNumber}</span>
+              <span className="text-sm font-mono text-slate-300 tracking-wider">{profile.phoneNumber}</span>
             </div>
-            <span className="text-[10px] text-slate-600 uppercase font-bold tracking-widest">Primary Contact</span>
+            <div className="flex flex-col items-end">
+              <span className="text-[9px] text-slate-600 uppercase font-bold tracking-widest">Primary Contact</span>
+              <span className="text-[8px] text-indigo-500/60 font-mono">Verified via ARIA-SAT</span>
+            </div>
           </div>
         )}
       </section>
@@ -393,7 +481,7 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-blue-500" />
+            <Lock className="w-4 h-4 text-indigo-500" />
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Identity Documents</h3>
           </div>
           <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -403,32 +491,32 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {profile?.travelDocuments?.map((doc, i) => (
-            <div key={i} className="p-5 bg-slate-900 border border-slate-800 rounded-3xl flex items-center justify-between group hover:border-slate-700 transition-all">
+            <div key={i} className="p-5 bg-slate-900/40 border border-slate-800/60 rounded-3xl flex items-center justify-between group hover:border-indigo-500/30 transition-all backdrop-blur-sm">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-2xl transition-colors ${
-                  doc.status === 'verified' ? 'bg-green-500/10 text-green-500' : 'bg-slate-800 text-slate-500'
+                <div className={`p-3 rounded-2xl transition-all duration-500 ${
+                  doc.status === 'verified' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-lg shadow-emerald-500/5' : 'bg-slate-800 text-slate-500'
                 }`}>
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="block font-bold text-base">{doc.type}</span>
+                  <span className="block font-bold text-base text-slate-100">{doc.type}</span>
                   <div className="flex flex-col gap-1">
                     {doc.status === 'verified' ? (
-                      <span className="text-[10px] text-green-500 uppercase font-bold tracking-widest flex items-center gap-1">
-                        <CheckCircle className="w-2 h-2" /> Verified
+                      <span className="text-[10px] text-emerald-500 uppercase font-bold tracking-widest flex items-center gap-1.5">
+                        <CheckCircle className="w-2.5 h-2.5" /> Verified
                       </span>
                     ) : doc.status === 'rejected' ? (
                       <div className="space-y-1">
-                        <span className="text-[10px] text-red-500 uppercase font-bold tracking-widest flex items-center gap-1">
-                          <XCircle className="w-2 h-2" /> Verification Failed
+                        <span className="text-[10px] text-rose-500 uppercase font-bold tracking-widest flex items-center gap-1.5">
+                          <XCircle className="w-2.5 h-2.5" /> Verification Failed
                         </span>
-                        <p className="text-[9px] text-slate-500 leading-tight max-w-[150px]">
+                        <p className="text-[9px] text-slate-500 leading-tight max-w-[150px] font-medium">
                           {doc.failureReason}
                         </p>
                       </div>
                     ) : (
-                      <span className="text-[10px] text-amber-500 uppercase font-bold tracking-widest flex items-center gap-1">
-                        <AlertCircle className="w-2 h-2" /> Pending
+                      <span className="text-[10px] text-amber-500 uppercase font-bold tracking-widest flex items-center gap-1.5">
+                        <AlertCircle className="w-2.5 h-2.5" /> Pending
                       </span>
                     )}
                   </div>
@@ -439,22 +527,25 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
                 <button 
                   onClick={() => simulateUpload(doc.type)}
                   disabled={uploadingDoc === doc.type}
-                  className={`px-4 py-2 text-white text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 ${
-                    doc.status === 'rejected' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
-                  } disabled:bg-slate-800`}
+                  className={`px-4 py-2.5 text-white text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 shadow-xl active:scale-95 ${
+                    doc.status === 'rejected' ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-900/40' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/40'
+                  } disabled:bg-slate-800 disabled:shadow-none`}
                 >
-                  {uploadingDoc === doc.type ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                  {uploadingDoc === doc.type ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                   {uploadingDoc === doc.type ? 'Verifying...' : doc.status === 'rejected' ? 'Re-upload' : 'Upload & Verify'}
                 </button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[8px] font-bold uppercase tracking-widest rounded">Encrypted</div>
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[8px] text-emerald-500 font-black uppercase tracking-widest">Securely Stored</span>
+                    <span className="text-[7px] text-slate-600 font-mono">AES-256-GCM</span>
+                  </div>
                   <button 
                     onClick={() => setViewingDoc(doc.type)}
-                    className="p-2 hover:bg-slate-800 rounded-xl transition-colors"
-                    title="View Encrypted Document"
+                    className="p-3 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-xl transition-all active:scale-90 group/link"
+                    title="Access Secure Vault"
                   >
-                    <ExternalLink className="w-4 h-4 text-slate-500" />
+                    <ExternalLink className="w-4 h-4 text-indigo-400 group-hover/link:text-indigo-300 transition-colors" />
                   </button>
                 </div>
               )}
@@ -464,34 +555,34 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
       </section>
 
       {/* Zero-Knowledge Proof Panel */}
-      <section className={`p-6 border rounded-3xl space-y-6 transition-all duration-500 ${
+      <section className={`p-6 border rounded-[2rem] space-y-6 transition-all duration-700 shadow-2xl backdrop-blur-sm ${
         profile?.ageProofGenerated 
-          ? 'bg-emerald-900/20 border-emerald-500/30' 
-          : 'bg-slate-900 border-slate-800'
+          ? 'bg-emerald-900/20 border-emerald-500/30 shadow-emerald-900/10' 
+          : 'bg-slate-900/40 border-slate-800/60 shadow-black/40'
       }`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl transition-colors ${profile?.ageProofGenerated ? 'bg-emerald-500/20 text-emerald-500' : 'bg-slate-800 text-slate-500'}`}>
-              <Zap className={`w-5 h-5 ${profile?.ageProofGenerated ? 'fill-current' : ''}`} />
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-2xl transition-all duration-500 ${profile?.ageProofGenerated ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 shadow-lg shadow-emerald-500/5' : 'bg-slate-800 text-slate-500'}`}>
+              <Zap className={`w-6 h-6 ${profile?.ageProofGenerated ? 'fill-current' : ''}`} />
             </div>
             <div>
-              <h3 className="font-bold text-sm uppercase tracking-widest">ZKP Age Verification</h3>
-              <p className="text-[10px] text-slate-500">Prove you are &gt;18 without revealing your birthdate.</p>
+              <h3 className="font-bold text-base text-slate-100">ZKP Age Verification</h3>
+              <p className="text-[10px] text-slate-500 font-medium">Prove you are &gt;18 without revealing your birthdate.</p>
             </div>
           </div>
           {!profile?.ageProofGenerated ? (
             <button 
               onClick={handleGenerateProof}
               disabled={isGeneratingProof || !profile?.isVerified}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 shadow-xl shadow-emerald-900/40 active:scale-95"
             >
-              {isGeneratingProof ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+              {isGeneratingProof ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
               {isGeneratingProof ? 'Computing Proof...' : 'Generate Proof'}
             </button>
           ) : (
             <button 
               onClick={() => setViewingZkp(true)}
-              className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest hover:text-emerald-400 transition-colors"
+              className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest hover:text-emerald-400 transition-all active:scale-95"
             >
               View Proof Details
             </button>
@@ -499,9 +590,9 @@ export default function BlockchainIdentity({ profile }: BlockchainIdentityProps)
         </div>
 
         {!profile?.isVerified && !profile?.ageProofGenerated && (
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center gap-3">
-            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
-            <p className="text-[10px] text-amber-200/70 font-medium">
+          <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl flex items-center gap-4 backdrop-blur-sm">
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+            <p className="text-[10px] text-amber-200/70 font-bold uppercase tracking-widest leading-relaxed">
               Complete DID verification to unlock Zero-Knowledge Proof generation.
             </p>
           </div>

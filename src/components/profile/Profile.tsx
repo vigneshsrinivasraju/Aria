@@ -38,36 +38,36 @@ export default function Profile({ profile }: ProfileProps) {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{profile?.displayName}</h2>
-          <p className="text-slate-500 text-sm font-medium uppercase tracking-widest">{profile?.role} Profile</p>
+          <h2 className="text-3xl font-black tracking-tighter text-white uppercase">{profile?.displayName}</h2>
+          <p className="text-indigo-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">{profile?.role} Profile</p>
         </div>
       </section>
 
       {/* DID Card */}
-      <section className="p-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-xl shadow-blue-900/20 space-y-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
+      <section className="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl shadow-2xl shadow-indigo-900/40 space-y-6 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
           <Globe className="w-32 h-32" />
         </div>
         
         <div className="flex justify-between items-start relative z-10">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-200">Decentralized Identity (DID)</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-200/70">Decentralized Identity (DID)</span>
             <div className="flex items-center gap-2">
-              <Fingerprint className="w-4 h-4 text-blue-200" />
-              <span className="text-xs font-mono text-white/90 truncate max-w-[180px]">{profile?.did}</span>
+              <Fingerprint className="w-4 h-4 text-indigo-200" />
+              <span className="text-xs font-mono text-white/90 truncate max-w-[180px] tracking-wider">{profile?.did}</span>
             </div>
           </div>
-          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10">
+          <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 shadow-inner">
             <QrCode className="w-6 h-6 text-white" />
           </div>
         </div>
 
         <div className="flex justify-between items-end relative z-10">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-200">Safety Score</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-200/70">Safety Score</span>
             <span className="text-3xl font-bold text-white tracking-tight">{profile?.safetyScore}%</span>
           </div>
-          <div className="px-3 py-1 bg-white/20 rounded-full backdrop-blur-md border border-white/20">
+          <div className="px-3 py-1.5 bg-white/10 rounded-full backdrop-blur-md border border-white/10">
             <span className="text-[10px] font-bold uppercase tracking-widest text-white">Verified 2026</span>
           </div>
         </div>
